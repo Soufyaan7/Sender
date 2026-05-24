@@ -14,6 +14,7 @@ export default function Campaigns() {
   const [activeView, setActiveView] = useState('list'); // 'list' or 'create'
   const [sendingState, setSendingState] = useState(null); // success, error, loading
   const [statusMessage, setStatusMessage] = useState('');
+  const [editorMode, setEditorMode] = useState('html'); // 'html' or 'visual'
 
   // Campaign Details Modal State
   const [selectedCampaign, setSelectedCampaign] = useState(null);
@@ -363,21 +364,51 @@ export default function Campaigns() {
             </div>
 
             <div className="form-group">
-              <label style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Contenu HTML (Corps de l'e-mail)</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                  <Sparkles size={12} color="var(--primary-color)" />
-                  Placeholders supportés: {"{{firstName}}"}, {"{{lastName}}"}, {"{{email}}"}
-                </span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <label style={{ margin: 0 }}>Contenu de l'e-mail</label>
+                <div style={{ display: 'flex', gap: '0.35rem', background: 'rgba(0,0,0,0.2)', padding: '0.2rem', borderRadius: '6px', border: '1px solid var(--panel-border)' }}>
+                  <button
+                    type="button"
+                    className={`btn ${editorMode === 'html' ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none' }}
+                    onClick={() => setEditorMode('html')}
+                  >
+                    Code HTML brut
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${editorMode === 'visual' ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none' }}
+                    onClick={() => setEditorMode('visual')}
+                  >
+                    Éditeur Visuel
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.2rem', marginBottom: '0.75rem' }}>
+                <Sparkles size={12} color="var(--primary-color)" />
+                Placeholders : <code>{"{{firstName}}"}</code>, <code>{"{{lastName}}"}</code>, <code>{"{{email}}"}</code>
+              </div>
               
-              <ReactQuill
-                theme="snow"
-                value={htmlContent}
-                onChange={setHtmlContent}
-                modules={modules}
-                placeholder="Rédigez votre message ici. Personnalisez-le en insérant les variables ci-dessus..."
-              />
+              {editorMode === 'html' ? (
+                <textarea
+                  className="form-input"
+                  style={{ minHeight: '300px', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: '1.5', background: '#090d16', border: '1px solid var(--panel-border)', color: '#f3f4f6', resize: 'vertical' }}
+                  value={htmlContent}
+                  onChange={(e) => setHtmlContent(e.target.value)}
+                  placeholder="Ex : <h1 style='color: #6366f1;'>Bonjour {{firstName}}</h1>&#10;<p>Visitez notre <a href='https://example.com'>site web</a>.</p>"
+                  required
+                />
+              ) : (
+                <ReactQuill
+                  theme="snow"
+                  value={htmlContent}
+                  onChange={setHtmlContent}
+                  modules={modules}
+                  placeholder="Rédigez votre message ici. Personnalisez-le en insérant les variables ci-dessus..."
+                />
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
